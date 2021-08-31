@@ -72,7 +72,7 @@ is
          Receiver   : Module_ID_Type  := 1;  -- Would another module ID be more appropriate?
          Request_ID : Request_ID_Type := 0;
          Message_ID : Message_ID_Type := 0;
-         Priority   : System.Priority := System.Default_Priority;
+         Priority   : System.Priority := System.Priority'First;
          Size       : Data_Size_Type  := 0;
          Payload    : Data_Array      := (others => 0);
       end record;
@@ -85,7 +85,7 @@ is
       Receiver   : Module_ID_Type;
       Request_ID : Request_ID_Type;
       Message_ID : Message_ID_Type;
-      Priority   : System.Priority := System.Default_Priority) return Message_Record
+      Priority   : System.Priority := System.Priority'First) return Message_Record
      with
        Global => null,
        Post=>
