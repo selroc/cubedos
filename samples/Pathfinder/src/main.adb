@@ -11,10 +11,12 @@ with System;
 with Random_Number_Generator.Messages;
 with Read_Number.Messages;
 with Telemetry.Messages;
+with System_Bus.Messages;
 
 pragma Unreferenced (Random_Number_Generator.Messages);
 pragma Unreferenced (Read_Number.Messages);
 pragma Unreferenced (Telemetry.Messages);
+pragma Unreferenced (System_Bus.Messages);
 
 procedure Main with
    Priority => System.Priority'Last

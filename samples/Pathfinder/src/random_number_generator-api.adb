@@ -16,11 +16,6 @@ package body Random_Number_Generator.API is
       Request_ID    : Request_ID_Type; Priority : System.Priority := Pri)
       return Message_Record
    is
-      --  Create a skeletal message based on the given sender and
-      --  priority.  This function knows what module ID will receive
-      --  the message and knows what message ID is approriate (there
-      --  are different functions for different messages) so it can
-      --  fill in those values on its own.
       Message : constant Message_Record :=
         Make_Empty_Message
           (Sender_Domain, Domain_ID, Sender, ID, Request_ID,
