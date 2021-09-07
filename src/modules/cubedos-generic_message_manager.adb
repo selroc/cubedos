@@ -47,7 +47,7 @@ is
       procedure Exchange (I, J : Message_Index_Type);
       procedure Print_Mailbox;
       procedure Replace_Last_Message(Message : in Message_Record);
-      function Calc_Next (Next : Message_Index_Type) return Message_Index_Type;
+      function Calculate_Next_Spot (Next : Message_Index_Type) return Message_Index_Type;
    end Mailbox;
 
    -- One mailbox for each module.
@@ -87,7 +87,7 @@ is
          if Count /= Mailbox_Size then
             Messages (Next_In) := Message;
 
-            Next_In := Calc_Next (Next_In);
+            Next_In := Calculate_Next_Spot (Next_In);
 
             Count           := Count + 1;
             Message_Waiting := True;
@@ -105,7 +105,7 @@ is
          Sort_Mail;
       end Replace_Last_Message;
 
-      function Calc_Next (Next : Message_Index_Type) return Message_Index_Type
+      function Calculate_Next_Spot (Next : Message_Index_Type) return Message_Index_Type
       is
       begin
          if Next = Mailbox_Size then
@@ -113,7 +113,7 @@ is
          else
             return Next + 1;
          end if;
-      end Calc_Next;
+      end Calculate_Next_Spot;
 
       -----------
       -- Receive
@@ -126,7 +126,7 @@ is
 
          Messages (Next_Out).Priority := System.Priority'First;
 
-         Next_Out := Calc_Next (Next_Out);
+         Next_Out := Calculate_Next_Spot (Next_Out);
 
          Count := Count - 1;
          if Count = 0 then
@@ -138,7 +138,7 @@ is
       begin
          Insertion_Sort;
          Next_Out := Message_Index_Type'First;
-         Next_In  := Calc_Next (Count);
+         Next_In  := Calculate_Next_Spot (Count);
       end Sort_Mail;
 
       procedure Insertion_Sort is
