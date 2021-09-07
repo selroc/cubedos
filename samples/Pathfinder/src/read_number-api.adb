@@ -32,9 +32,7 @@ package body Read_Number.API is
       --  Encode one parameter (decoding logic must be consistent).
       --  Set Position to get ready for the next parameter.
       XDR.Encode
-        (Value => XDR.XDR_Integer (Value),
-      -- (Value => XDR.XDR_Unsigned (Status_Type'Pos (Status)),
-      Data        => Message.Payload,
+        (Value    => XDR.XDR_Integer (Value), Data => Message.Payload,
          Position => Position, Last => Last);
       Position := Last + 1;
 

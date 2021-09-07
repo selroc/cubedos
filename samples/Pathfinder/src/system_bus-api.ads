@@ -22,7 +22,9 @@ package System_Bus.API is
      (Random_Number_Request, Random_Number_Reply, Telemetry_Request,
       Telemetry_Reply);
 
+   -----------------
    -- Random Number
+   -----------------
    function Is_Random_Number_Request
      (Message : Message_Record) return Boolean is
      (Message.Receiver = ID and
@@ -40,8 +42,9 @@ package System_Bus.API is
 
    function Random_Number_Reply_Encode
      (Receiver_Domain : Domain_ID_Type; Receiver : Module_ID_Type;
-      Request_ID      : Request_ID_Type; Status : Status_Type;
-      Priority        : System.Priority := Pri) return Message_Record with
+      Request_ID      : Request_ID_Type; Status : Status_Type := Success;
+      Priority        : System.Priority := Pri; Value : Positive)
+      return Message_Record with
       Global => null;
 
    procedure Random_Number_Request_Decode
@@ -52,13 +55,15 @@ package System_Bus.API is
       Depends => (Decode_Status => Message);
 
    procedure Random_Number_Reply_Decode
-     (Message       : in     Message_Record;
-      Decode_Status :    out Message_Status_Type) with
+     (Message : in     Message_Record; Decode_Status : out Message_Status_Type;
+      Value   :    out Positive) with
       Global  => null,
       Pre     => Is_Random_Number_Reply (Message),
-      Depends => (Decode_Status => Message);
+      Depends => (Decode_Status => Message, Value => Message);
 
-      -- Telemetry
+   -------------
+   -- Telemetry
+   -------------
    function Is_Telemetry_Request (Message : Message_Record) return Boolean is
      (Message.Receiver = ID and
       Message.Message_ID = Message_Type'Pos (Telemetry_Request));

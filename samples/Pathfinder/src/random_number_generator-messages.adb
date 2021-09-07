@@ -9,7 +9,7 @@ pragma SPARK_Mode (On);
 
 with Ada.Text_IO; use Ada.Text_IO;
 with Fibonacci;
-with Read_Number.API;
+with System_Bus.API;
 
 package body Random_Number_Generator.Messages is
    ML : Message_Loop;
@@ -77,9 +77,10 @@ package body Random_Number_Generator.Messages is
       Ada.Text_IO.New_Line;
 
       Outgoing_Message :=
-        Read_Number.API.Read_Number_Reply_Encode
-          (Receiver_Domain => Domain_ID, Receiver => Read_Number.ID,
-           Request_ID      => Read_Number.R_ID, Value => Value);
+        System_Bus.API.Random_Number_Reply_Encode
+          (Receiver_Domain => Domain_ID, Receiver => System_Bus.ID,
+           Request_ID      => System_Bus.R_ID, Priority => Pri,
+           Value           => Value);
 
       Message_Manager.Route_Message (Outgoing_Message);
 

@@ -11,6 +11,7 @@ with Ada.Text_IO;
 with GNAT.OS_Lib;
 with Telemetry.API;
 with Random_Number_Generator.API;
+with Read_Number.API;
 
 package body System_Bus.Messages is
 
@@ -82,7 +83,7 @@ package body System_Bus.Messages is
    -- Random Number
    -----------------
    procedure Handle_Random_Number_Request (Message : in Message_Record) is
-      Status : Message_Status_Type;
+      Status           : Message_Status_Type;
       Outgoing_Message : Message_Record;
    begin
       System_Bus.API.Random_Number_Request_Decode (Message, Status);
@@ -96,9 +97,19 @@ package body System_Bus.Messages is
    end Handle_Random_Number_Request;
 
    procedure Handle_Random_Number_Reply (Message : in Message_Record) is
-      Status : Message_Status_Type;
+      Status           : Message_Status_Type;
+      Outgoing_Message : Message_Record;
+      Value            : Positive := 42;
    begin
-      System_Bus.API.Random_Number_Reply_Decode (Message, Status);
+      System_Bus.API.Random_Number_Reply_Decode (Message, Status, Value);
+
+      -- Reply to read
+      Outgoing_Message :=
+        Read_Number.API.Read_Number_Reply_Encode
+          (Receiver_Domain => Domain_ID, Receiver => Read_Number.ID,
+           Request_ID      => Read_Number.R_ID, Value => Value);
+
+      Message_Manager.Route_Message (Outgoing_Message);
    end Handle_Random_Number_Reply;
 
    -------------

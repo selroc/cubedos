@@ -30,9 +30,10 @@ package body System_Bus.API is
    end Random_Number_Request_Encode;
 
    function Random_Number_Reply_Encode
-     (Receiver_Domain : Domain_ID_Type; Receiver : Module_ID_Type;
-      Request_ID      : Request_ID_Type; Status : Status_Type;
-      Priority        : System.Priority := Pri) return Message_Record
+    (Receiver_Domain : Domain_ID_Type; Receiver : Module_ID_Type;
+      Request_ID      : Request_ID_Type; Status : Status_Type := Success;
+      Priority        : System.Priority := Pri; Value : Positive)
+      return Message_Record
    is
       -- The skeletal message knows its sender (this module).
       Message : Message_Record :=
@@ -43,17 +44,17 @@ package body System_Bus.API is
       Position : Data_Index_Type;
       Last     : Data_Index_Type;
    begin
-      -- Set a starting position.
+      --  Set a starting position.
       Position := 0;
 
-      -- Encode one parameter (decoding logic must be consistent).
+      --  Encode one parameter (decoding logic must be consistent).
       --  Set Position to get ready for the next parameter.
       XDR.Encode
-        (XDR.XDR_Unsigned (Status_Type'Pos (Status)), Message.Payload,
-         Position, Last);
+        (Value    => XDR.XDR_Integer (Value), Data => Message.Payload,
+         Position => Position, Last => Last);
       Position := Last + 1;
 
-      -- Set the message size.
+      --  Set the message size.
       Message.Size := Last + 1;
       return Message;
    end Random_Number_Reply_Encode;
@@ -68,23 +69,26 @@ package body System_Bus.API is
    end Random_Number_Request_Decode;
 
    procedure Random_Number_Reply_Decode
-     (Message : in Message_Record; Decode_Status : out Message_Status_Type)
+     (Message : in     Message_Record; Decode_Status : out Message_Status_Type;
+      Value   :    out Positive)
    is
       Position  : Data_Index_Type;
       Last      : Data_Index_Type;
       Raw_Value : XDR.XDR_Unsigned;
-      Value     : Positive; -- Commonly, this would be an out parameter.
-      pragma Unreferenced (Value);
    begin
-      -- Set a starting position.
+      --  Set a starting position.
       Position := 0;
+      Value    := 42;
 
-      -- Decode one parameter (encoding logic must be consistent).
+      --  Decode one parameter (encoding logic must be consistent).
       --  Set position to get ready for next parameter.
-      XDR.Decode (Message.Payload, Position, Raw_Value, Last);
+      XDR.Decode
+        (Data => Message.Payload, Position => Position, Value => Raw_Value,
+         Last => Last);
+
       Position := Last + 1;
 
-      -- Convert raw XDR primitive type into appropriate result. Note
+      --  Convert raw XDR primitive type into appropriate result. Note
       --  runtime check needed!
       if Integer (Raw_Value) not in Positive then
          Decode_Status := Malformed;
@@ -99,8 +103,7 @@ package body System_Bus.API is
    -------------
    function Telemetry_Request_Encode
      (Sender_Domain : Domain_ID_Type; Sender : Module_ID_Type;
-      Request_ID    : Request_ID_Type; Priority : System.Priority := Pri)
-      return Message_Record
+      Request_ID    : Request_ID_Type; Priority : System.Priority := Pri) return Message_Record
    is
       Message : constant Message_Record :=
         Make_Empty_Message
